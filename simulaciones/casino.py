@@ -48,7 +48,7 @@ class NumeroJugador(Jugador):
 class ParidadJugador(Jugador):
     def __init__(self,ruleta,nombre):
         super().__init__(ruleta,nombre)
-        self.paridad=random.choice([True],[False])
+        self.paridad=random.choice([True,False])
 
     def jugar(self):
         if self.ruleta==0:
@@ -64,7 +64,7 @@ class ParidadJugador(Jugador):
             self.saldo -= self.apuesta
             self.ruleta.banca += self.apuesta
 
-class RandomJugador(Jugador):
+class MartingalaJugador(Jugador):
     def __init__(self,ruleta,nombre):
         super().__init__(ruleta,nombre)
         self.numero=random.randint(1,36)
@@ -89,9 +89,9 @@ def simular():
         NumeroJugador(ruleta, "Jugador 4"),
         ParidadJugador(ruleta, "Jugador 5"),
         ParidadJugador(ruleta, "Jugador 6"),
-        RandomJugador(ruleta, "Jugador 7"),
-        RandomJugador(ruleta, "Jugador 8"),
-        RandomJugador(ruleta, "Jugador 9")
+        MartingalaJugador(ruleta, "Jugador 7"),
+        MartingalaJugador(ruleta, "Jugador 8"),
+        MartingalaJugador(ruleta, "Jugador 9")
     ]
 
     for ronda in range(10):
@@ -115,4 +115,3 @@ def simular():
 if __name__ == "__main__":
     simular()
 
-    
