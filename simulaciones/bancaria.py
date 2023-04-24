@@ -1,9 +1,11 @@
 class CuentaBanco():
-    def __init__(self,saldoI=0):
-        self.saldo=saldoI
+    def __init__(self,saldo_inicial=0):
+        self.saldo=saldo_inicial
     def ingresar(self,cantidad):
         self.saldo += cantidad
     def retirar(self,cantidad):
+        if self.saldo < cantidad:
+         raise ValueError("No hay suficiente saldo")
         self.saldo -= cantidad
     def consultar(self):
         return self.saldo
@@ -11,7 +13,7 @@ class CuentaBanco():
 import unittest
 
 class TestCuentaBanco(unittest.TestCase):
-    def test_ingresaar(self):
+    def test_ingresar(self):
         cuenta=CuentaBanco(saldo_inicial=0)
         cuenta.ingresar(100)
         self.assertEqual(cuenta.obtener_saldo(),100)
@@ -20,6 +22,13 @@ class TestCuentaBanco(unittest.TestCase):
         cuenta=CuentaBanco(saldo_inicial=100)
         cuenta.retirar(50)
         self.assertEqual(cuenta.obtener_saldo(),50)
+    
+    def test_retirar_insuficiente(self):
+        cuenta = CuentaBanco(saldo_inicial=100)
+        with self.assertRaises(ValueError):
+            cuenta.retirar(200)
+    
+    
     def test_obtener_saldo(self):
         cuenta=CuentaBanco(saldo_inicial=100)
         self.assertEqual(cuenta.obtener_saldo(),100)
@@ -32,19 +41,27 @@ class TestCuentaBancoIntegracion(unittest.TestCase):
         procesosIngreso= [100]*40 + [50]*20 + [20]*60
         procesosRetiro= [100]*40 + [50]*20 + [20]*60
 
-        def proceso_ingreso(cuenta,cantidad):
+        def proceso_ingreso(cantidad):
             cuenta.ingresar(cantidad)
 
-        def proceso_retiro(cuenta,cantidad):
+        def proceso_retiro(cantidad):
             cuenta.retirar(cantidad)
 
 
         import multiprocessing
-        pool=multiprocessing.Pool()
-        pool.map(proceso_ingreso,[cuenta]*len(procesosIngreso),procesosIngreso)
-        pool.map(proceso_retiro,[cuenta]*len(procesosRetiro),procesosRetiro)
-        self.assertEqual(cuenta.obtener_saldo(),100)
+        pool = multiprocessing.Pool()
+        pool.map(proceso_ingreso, procesosIngreso)
+        pool.map(proceso_retiro, procesosRetiro)
+        pool.close()
+        pool.join()
+        self.assertEqual(cuenta.obtener_saldo(), 100)
+        
+        print("El saldo final es: " + str(cuenta.obtener_saldo()))
 
 if __name__ == '__main__':
     unittest.main()
+
+
+
+
 
